@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hire Hub - Company Setup</title>
+    <style>
+        :root {
+            --primary-color: #6a38c2;
+            --primary-color-dark: #6132b4;
+            --text-dark: #262626;
+            --text-light: #737373;
+            --extra-light: #e5e5e5;
+            --white: #ffffff;
+            --max-width: 1200px;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background-color: var(--extra-light);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .company-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--extra-light);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .status-message {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .companies-list {
+            margin-top: 2rem;
+            border-top: 1px solid var(--extra-light);
+            padding-top: 2rem;
+        }
+
+        .companies-list h2 {
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .company-card {
+            background: var(--white);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--extra-light);
+        }
+
+        .company-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Company Setup</h1>
+            <p>Create or manage your company profile</p>
+        </div>
+
+        {% if status %}
+        <div class="status-message {% if 'error' in status.lower() %}error{% else %}success{% endif %}">
+            {{ status }}
+        </div>
+        {% endif %}
+
+        <form class="company-form" action="/createcompany" method="POST">
+            <div class="form-group">
+                <label for="company_name">Company Name*</label>
+                <input type="text" id="company_name" name="company_name" value="{{ data['companyname'] if data else excom['companyname'] if excom else '' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Company Description*</label>
+                <textarea id="description" name="description" required>{{ excom['description'] if excom else '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="website">Company Website*</label>
+                <input type="url" id="website" name="website" value="{{ excom['website'] if excom else '' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location*</label>
+                <input type="text" id="location" name="location" value="{{ excom['location'] if excom else '' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Company Logo URL</label>
+                <input type="url" id="image" name="image" value="{{ excom['company_logo'] if excom else '' }}" placeholder="https://example.com/logo.png">
+            </div>
+
+            <button type="submit" class="btn">Update Company</button>
+            <button type="button" onclick="window.history.back()">Back</button>
+        </form>
+
+        {% if companies %}
+        <div class="companies-list">
+            <h2>Your Companies</h2>
+            {% for company in companies %}
+            <div class="company-card">
+                <h3>{{ company.companyname }}</h3>
+                <p>{{ company.description }}</p>
+                <p>Location: {{ company.location }}</p>
+                <p>Website: <a href="{{ company.website }}" target="_blank">{{ company.website }}</a></p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="nav-links">
+            <a href="/recprofile">Back to Profile</a>
+            <a href="/newjobs">Post a Job</a>
+        </div>
+    </div>
+</body>
+</html>

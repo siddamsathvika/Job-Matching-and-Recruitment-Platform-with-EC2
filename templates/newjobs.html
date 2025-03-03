@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireHub - Post a Job</title>
+    <style>
+        :root {
+            --primary-color: #6a38c2;
+            --primary-color-dark: #6132b4;
+            --text-dark: #262626;
+            --text-light: #737373;
+            --extra-light: #e5e5e5;
+            --white: #ffffff;
+            --max-width: 1200px;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background-color: var(--extra-light);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .job-form {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--extra-light);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .status-message {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .jobs-list {
+            margin-top: 2rem;
+            border-top: 1px solid var(--extra-light);
+            padding-top: 2rem;
+        }
+
+        .jobs-list h2 {
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .job-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--extra-light);
+        }
+
+        .job-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .job-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .job-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .no-company-message {
+            text-align: center;
+            padding: 2rem;
+            background: #fff3cd;
+            color: #856404;
+            border-radius: 5px;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Post a New Job</h1>
+            <p>Create a job posting for your company</p>
+        </div>
+
+        {% if status %}
+        <div class="status-message {% if 'error' in status.lower() %}error{% else %}success{% endif %}">
+            {{ status }}
+        </div>
+        {% endif %}
+
+        {% if not companies %}
+        <div class="no-company-message">
+            <h3>No Company Profile Found</h3>
+            <p>You need to create a company profile before posting jobs.</p>
+            <a href="/setup" class="btn" style="display: inline-block; width: auto; margin-top: 1rem;">Create Company Profile</a>
+        </div>
+        {% else %}
+        <form class="job-form" action="/postjobs" method="POST">
+            <div class="form-group">
+                <label for="company">Select Company*</label>
+                <select id="company" name="company" required>
+                    <option value="">Select a company</option>
+                    {% for company in companies %}
+                    <option value="{{ company.companyname }}">{{ company.companyname }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="title">Job Title*</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location*</label>
+                <input type="text" id="location" name="location" required>
+            </div>
+
+            <div class="form-group">
+                <label for="jobType">Job Type*</label>
+                <select id="jobType" name="jobType" required>
+                    <option value="">Select job type</option>
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Contract">Contract</option>
+                    <option value="Internship">Internship</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Job Description*</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="requirements">Requirements*</label>
+                <textarea id="requirements" name="requirements" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="salary">Salary (per year)*</label>
+                <input type="number" id="salary" name="salary" required>
+            </div>
+
+            <div class="form-group">
+                <label for="experienceLevel">Experience Level (in years)*</label>
+                <input type="number" id="experienceLevel" name="experienceLevel" required>
+            </div>
+
+            <div class="form-group">
+                <label for="noOfPosition">Number of Positions*</label>
+                <input type="number" id="noOfPosition" name="noOfPosition" required>
+            </div>
+
+            <button type="submit" class="btn">Post Job</button>
+        </form>
+        {% endif %}
+
+        {% if jobs %}
+        <div class="jobs-list">
+            <h2>Your Posted Jobs</h2>
+            {% for job in jobs %}
+            <div class="job-card">
+                <h3>{{ job.title }}</h3>
+                <p>{{ job.company }}</p>
+                <div class="job-details">
+                    <div class="job-detail">
+                        <span>Location:</span>
+                        <span>{{ job.location }}</span>
+                    </div>
+                    <div class="job-detail">
+                        <span>Type:</span>
+                        <span>{{ job.job_type }}</span>
+                    </div>
+                    <div class="job-detail">
+                        <span>Salary:</span>
+                        <span>${{ job.salary }}/year</span>
+                    </div>
+                    <div class="job-detail">
+                        <span>Posted:</span>
+                        <span>{{ job.date }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="nav-links">
+            <a href="/recprofile">Back to Profile</a>
+            <a href="/setup">Manage Companies</a>
+        </div>
+    </div>
+</body>
+</html>
